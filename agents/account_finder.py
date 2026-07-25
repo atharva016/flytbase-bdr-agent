@@ -49,6 +49,9 @@ def gather_web_intelligence(brief: dict) -> str:
     for i, r in enumerate(all_results[:40]):  # Limit to 40 results
         context_parts.append(f"[{i+1}] {r['title']}: {r['body']} (Source: {r['href']})")
     
+    if not context_parts:
+        return "Web search unavailable. Use your training knowledge to identify REAL Latin American mining companies. Focus on well-known companies like Codelco, Vale, BHP Chile, Anglo American, Antofagasta Minerals, Freeport-McMoRan Peru, Glencore, Southern Copper, Grupo Mexico, Teck Resources Chile, Capstone Copper, Lithium Americas Argentina."
+    
     return "\n".join(context_parts)
 
 

@@ -66,6 +66,9 @@ def run_contact_hunter(accounts: list[dict]) -> dict:
     for i, r in enumerate(all_search_results[:60]):
         search_context += f"[{i+1}] {r['title']}: {r['body']} ({r['href']})\n"
     
+    if not search_context.strip():
+        search_context = "Web search unavailable. Use your training knowledge to identify REAL executive contacts at these companies. If you cannot verify a specific person, mark them as 'Contact research needed' with the target role title. Do NOT invent fictional names."
+    
     # Step 2: Build prompt
     companies_json = json.dumps([{
         "company_name": a.get("company_name"),

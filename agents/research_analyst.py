@@ -66,6 +66,9 @@ def run_research_analyst(accounts: list[dict]) -> dict:
         for i, r in enumerate(results[:10]):
             research_context += f"[{i+1}] {r['title']}: {r['body']} (Source: {r['href']})\n"
     
+    if not research_context.strip():
+        research_context = "Web search unavailable. Use your training knowledge to produce research briefs with publicly known information about these companies. Focus on well-documented facts: revenue, operations, recent major projects, leadership, and safety/ESG initiatives."
+    
     # Step 2: Build prompt
     companies_json = json.dumps(accounts, indent=2)
     prompt = RESEARCH_ANALYST_PROMPT.format(companies=companies_json)
