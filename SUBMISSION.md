@@ -75,7 +75,7 @@ Campaign Brief (JSON Input)
 
 | Deliverable | Link |
 |-------------|------|
-| **Live System** | [Deployed on Render] |
+| **Live System** | https://flytbase-bdr-agent.onrender.com |
 | **GitHub Repo** | https://github.com/atharva016/flytbase-bdr-agent |
 | **Mind Map** | `mindmap.html` (self-contained HTML file in repo) |
 | **This File** | `SUBMISSION.md` |
