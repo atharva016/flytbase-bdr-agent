@@ -282,11 +282,18 @@ def get_status():
 
 @app.route('/api/results')
 def get_results():
-    """Get pipeline results (if complete)."""
-    if pipeline_state["status"] != "complete":
-        return jsonify({"error": "Pipeline not complete yet", "status": pipeline_state["status"]}), 404
+    """Get pipeline results (if complete), or cached results from previous runs."""
+    if pipeline_state["status"] == "complete" and pipeline_state["full_results"]:
+        return jsonify(pipeline_state["full_results"])
     
-    return jsonify(pipeline_state["full_results"])
+    # Fallback: serve cached results from file
+    results_file = os.path.join(os.path.dirname(__file__), 'pipeline_results.json')
+    if os.path.exists(results_file):
+        with open(results_file, 'r', encoding='utf-8') as f:
+            cached = json.load(f)
+        return jsonify(cached)
+    
+    return jsonify({"error": "No results available yet. Click 'Run Pipeline' to generate.", "status": pipeline_state["status"]}), 404
 
 
 @app.route('/api/results/download')

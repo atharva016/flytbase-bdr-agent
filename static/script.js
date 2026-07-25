@@ -17,6 +17,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Auto-load cached results on page load
+    loadCachedResults();
+    
+    async function loadCachedResults() {
+        try {
+            const r = await fetch('/api/results');
+            if (r.ok) {
+                const data = await r.json();
+                if (data && !data.error) {
+                    renderResultsFromAPI(data);
+                    resultsSection.classList.remove('hidden');
+                    // Mark all stages as complete
+                    for (let i = 1; i <= 4; i++) {
+                        updateStage(i, 'complete', 'Complete');
+                    }
+                }
+            }
+        } catch(e) {
+            console.log('No cached results available');
+        }
+    }
+
     runBtn.addEventListener('click', async () => {
         btnText.textContent = 'Running Pipeline...';
         btnSpinner.classList.remove('hidden');
