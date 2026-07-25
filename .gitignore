@@ -10,7 +10,7 @@ venv/
 dist/
 build/
 .eggs/
-pipeline_results.json
+
 *.jpeg
 *.pdf
 brief_text.txt
