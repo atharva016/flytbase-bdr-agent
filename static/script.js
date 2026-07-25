@@ -32,11 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     for (let i = 1; i <= 4; i++) {
                         updateStage(i, 'complete', 'Complete');
                     }
+                    btnText.textContent = 'Re-run Pipeline';
+                    return true;
                 }
             }
         } catch(e) {
             console.log('No cached results available');
         }
+        return false;
     }
 
     runBtn.addEventListener('click', async () => {
@@ -82,9 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = JSON.parse(e.data);
                 evtSource.close();
                 console.error('Pipeline error:', data.error);
-                btnText.textContent = 'Error - Retry';
-                btnSpinner.classList.add('hidden');
-                runBtn.disabled = false;
+                // Fall back to cached results
+                loadCachedResults().then(loaded => {
+                    if (!loaded) {
+                        btnText.textContent = 'Error - Retry';
+                    } else {
+                        btnText.textContent = 'Re-run Pipeline';
+                    }
+                    btnSpinner.classList.add('hidden');
+                    runBtn.disabled = false;
+                });
             });
             
             evtSource.onerror = () => {
@@ -126,8 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     finishPipeline();
                 } else if (status.status === 'error') {
                     clearInterval(poll);
-                    btnText.textContent = 'Error - Retry';
-                    btnSpinner.classList.add('hidden');
+                    // Fall back to cached results
+                    loadCachedResults().then(loaded => {
+                        btnText.textContent = loaded ? 'Re-run Pipeline' : 'Error - Retry';
+                        btnSpinner.classList.add('hidden');
+                        runBtn.disabled = false;
+                    });
                     runBtn.disabled = false;
                 }
             } catch (e) {
