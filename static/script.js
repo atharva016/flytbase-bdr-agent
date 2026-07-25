@@ -201,10 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Render results from the actual API response format
     function renderResultsFromAPI(data) {
+        console.log('renderResultsFromAPI called with:', Object.keys(data));
+        
         // === ACCOUNTS ===
         const accGrid = document.getElementById('accountsGrid');
         accGrid.innerHTML = '';
-        const accounts = data.accounts?.accounts || data.accounts || [];
+        const accounts = (data.accounts && data.accounts.accounts) ? data.accounts.accounts : (Array.isArray(data.accounts) ? data.accounts : []);
+        console.log('Accounts to render:', accounts.length);
         accounts.forEach(acc => {
             const name = acc.company_name || acc.name || 'Unknown';
             const country = acc.country || '';
@@ -237,7 +240,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // === CONTACTS ===
         const tBody = document.getElementById('contactsTableBody');
         tBody.innerHTML = '';
-        const contacts = data.contacts?.contacts || data.contacts || [];
+        const contacts = (data.contacts && data.contacts.contacts) ? data.contacts.contacts : (Array.isArray(data.contacts) ? data.contacts : []);
+        console.log('Contacts to render:', contacts.length);
         contacts.forEach(c => {
             const company = c.company || '';
             const name = c.name || '';
@@ -252,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${name}</td>
                     <td>${title}</td>
                     <td><span class="tag" style="background: rgba(255,255,255,0.1); color: #fff;">${seniority}</span></td>
-                    <td><a href="${linkedin}" style="color: var(--accent-primary); text-decoration: none;" target="_blank">${linkedin !== '#' && linkedin !== 'Not publicly available' ? 'Profile ↗' : 'N/A'}</a></td>
+                    <td><a href="${linkedin}" style="color: var(--accent-primary); text-decoration: none;" target="_blank">${linkedin !== '#' && linkedin !== 'Not publicly available' ? 'Profile' : 'N/A'}</a></td>
                     <td style="font-size: 0.85rem;">${email}</td>
                 </tr>
             `;
@@ -261,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // === RESEARCH ===
         const resGrid = document.getElementById('researchGrid');
         resGrid.innerHTML = '';
-        const briefs = data.research?.research_briefs || data.research || [];
+        const briefs = (data.research && data.research.research_briefs) ? data.research.research_briefs : (Array.isArray(data.research) ? data.research : []);
         briefs.forEach(r => {
             const company = r.company_name || r.company || '';
             const summary = r.executive_summary || '';
@@ -307,7 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // === EMAILS ===
         const emailGrid = document.getElementById('emailsGrid');
         emailGrid.innerHTML = '';
-        const emails = data.emails?.emails || data.emails || [];
+        const emails = (data.emails && data.emails.emails) ? data.emails.emails : (Array.isArray(data.emails) ? data.emails : []);
+        console.log('Emails to render:', emails.length);
         emails.forEach(e => {
             const contactName = e.contact_name || e.to || '';
             const company = e.company || '';
