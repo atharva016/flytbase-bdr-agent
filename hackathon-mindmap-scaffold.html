@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hackathon Flow Scaffold</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --ink: #1f2430;
+        --ink-2: #535b6b;
+        --ink-3: #8a93a6;
+        --line: #e2e6ee;
+        --stage: #ffffff;
+        --decision: #fbebcf;
+        --decision-border: #e5bf77;
+        --route: #d8f0e4;
+        --route-border: #aedcc6;
+        --stop: #f8dce3;
+        --stop-border: #edacbd;
+        --note: #e6e0f4;
+        --note-border: #c9bee8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        padding: 28px 18px 56px;
+      }
+
+      main {
+        width: min(980px, 100%);
+        margin: 0 auto;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      .sub {
+        margin-top: 6px;
+        max-width: 760px;
+        color: var(--ink-2);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 18px 0 26px;
+        color: var(--ink-2);
+        font-size: 11px;
+      }
+
+      .lg {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .sw {
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 4px;
+        background: #fff;
+      }
+
+      .sw.dec {
+        width: 12px;
+        height: 12px;
+        border-color: var(--decision-border);
+        background: var(--decision);
+        transform: rotate(45deg);
+      }
+
+      .sw.route {
+        border-color: var(--route-border);
+        background: var(--route);
+      }
+
+      .sw.stop {
+        border-color: var(--stop-border);
+        background: var(--stop);
+      }
+
+      .flow,
+      .col,
+      .branch-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .flow {
+        gap: 0;
+      }
+
+      .section {
+        width: 100%;
+        margin: 26px 0 12px;
+        border-bottom: 1.5px solid var(--line);
+        padding-bottom: 6px;
+        color: var(--ink-3);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .node,
+      .decision,
+      .route,
+      .stop,
+      .note {
+        width: min(620px, 100%);
+        border-radius: 12px;
+        padding: 12px 15px;
+        text-align: center;
+      }
+
+      .node {
+        border: 1.5px solid var(--line);
+        background: var(--stage);
+      }
+
+      .decision {
+        border: 1.5px solid var(--decision-border);
+        background: var(--decision);
+      }
+
+      .route {
+        border: 1.5px solid var(--route-border);
+        background: var(--route);
+      }
+
+      .stop {
+        border: 1.5px solid var(--stop-border);
+        background: var(--stop);
+      }
+
+      .note {
+        border: 1.5px dashed var(--note-border);
+        background: var(--note);
+      }
+
+      .tag {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--ink-3);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .title {
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .desc {
+        margin-top: 4px;
+        color: var(--ink-2);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .slot {
+        margin-top: 9px;
+        border: 1px dashed rgba(31, 36, 48, 0.28);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.62);
+        padding: 9px 10px;
+        color: var(--ink-2);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.45;
+        text-align: left;
+      }
+
+      .arrow {
+        position: relative;
+        width: 2px;
+        height: 22px;
+        background: var(--ink-3);
+      }
+
+      .arrow::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: -4px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 7px solid var(--ink-3);
+      }
+
+      .split {
+        margin: 5px 0;
+        color: var(--ink-3);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .branch {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+        width: 100%;
+      }
+
+      .branch-col {
+        flex: 1;
+        min-width: 260px;
+        gap: 7px;
+      }
+
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        width: 100%;
+      }
+
+      .notes .note {
+        min-height: 128px;
+      }
+
+      @media (max-width: 760px) {
+        .branch-col,
+        .notes {
+          min-width: 100%;
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Hackathon Flowchart</h1>
+      <p class="sub">
+        Static HTML only. Shape this into the flow, choices, and proof that best explain your work.
+      </p>
+
+      <div class="legend">
+        <span class="lg"><span class="sw"></span>Step</span>
+        <span class="lg"><span class="sw dec"></span>Decision</span>
+        <span class="lg"><span class="sw route"></span>Route</span>
+        <span class="lg"><span class="sw stop"></span>Stop</span>
+      </div>
+
+      <section class="flow" aria-label="Solution flowchart">
+        <div class="section" style="margin-top: 0">Main Flow</div>
+
+        <div class="node">
+          <span class="tag">Entry</span>
+          <div class="title">Starting point</div>
+          <div class="slot">...</div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="node">
+          <span class="tag">Move</span>
+          <div class="title">Key motion</div>
+          <div class="slot">...</div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="decision">
+          <span class="tag">Fork</span>
+          <div class="title">Decision point</div>
+          <div class="slot">...</div>
+        </div>
+        <div class="split">path a / path b</div>
+
+        <div class="branch">
+          <div class="branch-col">
+            <div class="stop">
+              <span class="tag">A</span>
+              <div class="title">Alternate route</div>
+              <div class="slot">...</div>
+            </div>
+          </div>
+
+          <div class="branch-col">
+            <div class="node">
+              <span class="tag">B</span>
+              <div class="title">Primary route</div>
+              <div class="slot">...</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="route">
+              <span class="tag">Output</span>
+              <div class="title">Result</div>
+              <div class="slot">...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">Proof</div>
+        <div class="note">
+          <span class="tag">Signals</span>
+          <div class="title">Evidence</div>
+          <div class="slot">...</div>
+        </div>
+      </section>
+
+      <section aria-label="Supporting notes">
+        <div class="section">Notes</div>
+        <div class="notes">
+          <div class="note">
+            <span class="tag">Context</span>
+            <div class="slot">...</div>
+          </div>
+          <div class="note">
+            <span class="tag">Edges</span>
+            <div class="slot">...</div>
+          </div>
+          <div class="note">
+            <span class="tag">Open</span>
+            <div class="slot">...</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

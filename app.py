@@ -309,6 +309,9 @@ def health():
 
 # === Main Entry Point ===
 if __name__ == '__main__':
+    import sys
+    sys.stdout.reconfigure(encoding='utf-8')
+    
     port = int(os.environ.get('PORT', 5000))
     
     print("=" * 60)
@@ -317,16 +320,16 @@ if __name__ == '__main__':
     print("=" * 60)
     
     try:
-        provider = get_provider()
-        print(f"\n✅ LLM configured using {provider}")
+        provider, _ = get_provider()
+        print(f"\n[OK] LLM configured using {provider}")
     except ValueError as e:
-        print(f"\n⚠️  WARNING: {e}")
+        print(f"\n[WARNING] {e}")
         print("  Please set GEMINI_API_KEY or GROQ_API_KEY as an environment variable")
         print("  Or add it to the .env file\n")
     
-    print(f"\n🚀 Starting server on http://localhost:{port}")
-    print(f"📊 Dashboard: http://localhost:{port}/")
-    print(f"📡 API: http://localhost:{port}/api/run-pipeline")
-    print(f"💓 Health: http://localhost:{port}/health\n")
+    print(f"\n[*] Starting server on http://localhost:{port}")
+    print(f"[*] Dashboard: http://localhost:{port}/")
+    print(f"[*] API: http://localhost:{port}/api/run-pipeline")
+    print(f"[*] Health: http://localhost:{port}/health\n")
     
     app.run(host='0.0.0.0', port=port, debug=False)
