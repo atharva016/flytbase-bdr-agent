@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlytBase Outbound BDR AI Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>FlytBase <span>BDR AI</span></h1>
+            </div>
+            <div class="subtitle">Autonomous Sales Intelligence Pipeline</div>
+        </header>
+
+        <main>
+            <section class="panel brief-panel glass">
+                <h2>Campaign Brief</h2>
+                <div class="brief-grid">
+                    <div class="brief-item">
+                        <span class="label">Target Vertical</span>
+                        <p>Large-scale lithium, copper, and iron ore mining operations in Latin America</p>
+                    </div>
+                    <div class="brief-item">
+                        <span class="label">Reference Account</span>
+                        <p>SQM (Sociedad Química y Minera de Chile)</p>
+                    </div>
+                    <div class="brief-item">
+                        <span class="label">Goal</span>
+                        <p>Book discovery calls with Head of Operations, VP of HSE, or Site Directors</p>
+                    </div>
+                    <div class="brief-item">
+                        <span class="label">FlytBase Angle</span>
+                        <p>Autonomous drone inspection replacing contracted crews at hazardous, 24/7 extraction sites</p>
+                    </div>
+                </div>
+                <button id="runPipelineBtn" class="btn-primary glow-effect">
+                    <span class="btn-text">Run Pipeline</span>
+                    <div class="spinner hidden" id="btnSpinner"></div>
+                </button>
+            </section>
+
+            <section class="panel progress-panel glass">
+                <h2>Pipeline Status</h2>
+                <div class="stepper">
+                    <div class="step" id="step-1">
+                        <div class="step-icon">🏢</div>
+                        <div class="step-content">
+                            <div class="step-title">Account Identification</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+                    </div>
+                    <div class="connector" id="conn-1"></div>
+                    <div class="step" id="step-2">
+                        <div class="step-icon">👤</div>
+                        <div class="step-content">
+                            <div class="step-title">Contact Discovery</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+                    </div>
+                    <div class="connector" id="conn-2"></div>
+                    <div class="step" id="step-3">
+                        <div class="step-icon">🔍</div>
+                        <div class="step-content">
+                            <div class="step-title">Account Research</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+                    </div>
+                    <div class="connector" id="conn-3"></div>
+                    <div class="step" id="step-4">
+                        <div class="step-icon">✉️</div>
+                        <div class="step-content">
+                            <div class="step-title">Email Generation</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="results-section hidden" id="resultsSection">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="accounts">Accounts</button>
+                    <button class="tab-btn" data-tab="contacts">Contacts</button>
+                    <button class="tab-btn" data-tab="research">Research</button>
+                    <button class="tab-btn" data-tab="emails">Emails</button>
+                </div>
+                <div class="tab-content glass">
+                    <div class="tab-pane active" id="tab-accounts">
+                        <div class="grid" id="accountsGrid"></div>
+                    </div>
+                    <div class="tab-pane" id="tab-contacts">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Seniority</th>
+                                        <th>LinkedIn</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contactsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-research">
+                        <div class="grid" id="researchGrid"></div>
+                    </div>
+                    <div class="tab-pane" id="tab-emails">
+                        <div class="grid" id="emailsGrid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Built for FlytBase Hiring Hackathon 2026</p>
+            <p class="footer-sub">Powered by AI Agent Pipeline</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

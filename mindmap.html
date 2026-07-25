@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlytBase Outbound BDR AI Agent - Thought Process</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --ink: #1f2430;
+        --ink-2: #535b6b;
+        --ink-3: #8a93a6;
+        --line: #e2e6ee;
+        --stage: #ffffff;
+        --decision: #fbebcf;
+        --decision-border: #e5bf77;
+        --route: #d8f0e4;
+        --route-border: #aedcc6;
+        --stop: #f8dce3;
+        --stop-border: #edacbd;
+        --note: #e6e0f4;
+        --note-border: #c9bee8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        padding: 28px 18px 56px;
+      }
+
+      main {
+        width: min(980px, 100%);
+        margin: 0 auto;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      .sub {
+        margin-top: 6px;
+        max-width: 760px;
+        color: var(--ink-2);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 18px 0 26px;
+        color: var(--ink-2);
+        font-size: 11px;
+      }
+
+      .lg {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .sw {
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 4px;
+        background: #fff;
+      }
+
+      .sw.dec {
+        width: 12px;
+        height: 12px;
+        border-color: var(--decision-border);
+        background: var(--decision);
+        transform: rotate(45deg);
+      }
+
+      .sw.route {
+        border-color: var(--route-border);
+        background: var(--route);
+      }
+
+      .sw.stop {
+        border-color: var(--stop-border);
+        background: var(--stop);
+      }
+
+      .flow,
+      .col,
+      .branch-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .flow {
+        gap: 0;
+      }
+
+      .section {
+        width: 100%;
+        margin: 26px 0 12px;
+        border-bottom: 1.5px solid var(--line);
+        padding-bottom: 6px;
+        color: var(--ink-3);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .node,
+      .decision,
+      .route,
+      .stop,
+      .note {
+        width: min(620px, 100%);
+        border-radius: 12px;
+        padding: 12px 15px;
+        text-align: center;
+      }
+
+      .node {
+        border: 1.5px solid var(--line);
+        background: var(--stage);
+      }
+
+      .decision {
+        border: 1.5px solid var(--decision-border);
+        background: var(--decision);
+      }
+
+      .route {
+        border: 1.5px solid var(--route-border);
+        background: var(--route);
+      }
+
+      .stop {
+        border: 1.5px solid var(--stop-border);
+        background: var(--stop);
+      }
+
+      .note {
+        border: 1.5px dashed var(--note-border);
+        background: var(--note);
+      }
+
+      .tag {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--ink-3);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .title {
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .desc {
+        margin-top: 4px;
+        color: var(--ink-2);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .slot {
+        margin-top: 9px;
+        border: 1px dashed rgba(31, 36, 48, 0.28);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.62);
+        padding: 9px 10px;
+        color: var(--ink-2);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.45;
+        text-align: left;
+      }
+
+      .arrow {
+        position: relative;
+        width: 2px;
+        height: 22px;
+        background: var(--ink-3);
+      }
+
+      .arrow::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: -4px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 7px solid var(--ink-3);
+      }
+
+      .split {
+        margin: 5px 0;
+        color: var(--ink-3);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .branch {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+        width: 100%;
+      }
+
+      .branch-col {
+        flex: 1;
+        min-width: 260px;
+        gap: 7px;
+      }
+
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        width: 100%;
+      }
+
+      .notes .note {
+        min-height: 128px;
+      }
+
+      @media (max-width: 760px) {
+        .branch-col,
+        .notes {
+          min-width: 100%;
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>FlytBase Outbound BDR AI Agent — Thought Process</h1>
+      <p class="sub">
+        This flowchart shows how I broke down the problem, the architectural decisions made, 
+        the multi-agent delegation strategy, and where real data flows through the pipeline.
+        Built by Atharva Jamdar for FlytBase Hiring Hackathon 2026.
+      </p>
+
+      <div class="legend">
+        <span class="lg"><span class="sw"></span>Step</span>
+        <span class="lg"><span class="sw dec"></span>Decision</span>
+        <span class="lg"><span class="sw route"></span>Route</span>
+        <span class="lg"><span class="sw stop"></span>Stop / Failure</span>
+      </div>
+
+      <section class="flow" aria-label="Solution flowchart">
+        <div class="section" style="margin-top: 0">Input Layer</div>
+
+        <div class="node">
+          <span class="tag">Entry</span>
+          <div class="title">Campaign Brief Ingestion</div>
+          <div class="slot">
+            Input: Target Vertical (Latin American mining), Reference Account (SQM), 
+            Target Roles (Head of Ops, VP HSE, Site Directors), FlytBase Angle 
+            (drone inspection replacing contracted crews).<br><br>
+            The system accepts a structured JSON brief. The SQM profile is used as the 
+            "anchor" to model the Ideal Customer Profile (ICP) — matching on scale, 
+            geography, commodities, and operational complexity.
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="decision">
+          <span class="tag">Architecture Decision</span>
+          <div class="title">Single Agent vs. Multi-Agent Pipeline?</div>
+          <div class="slot">
+            <strong>Decision:</strong> Multi-agent pipeline with 4 specialized sub-agents.<br><br>
+            <strong>Why not single agent?</strong> A single monolithic prompt would produce 
+            shallow, hallucination-prone output. Each stage requires different skills: 
+            web search for discovery, strategic analysis for research, creative writing for emails.<br><br>
+            <strong>Why 4 agents?</strong> Maps directly to the BDR workflow: 
+            (1) Find companies → (2) Find people → (3) Research deeply → (4) Write outreach.
+            Each agent is independently testable, debuggable, and improvable.
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="section">Stage 1 — Account Identification</div>
+
+        <div class="node">
+          <span class="tag">Agent 1: Account Finder</span>
+          <div class="title">Find Mining Companies Matching SQM Profile</div>
+          <div class="slot">
+            <strong>How it works:</strong><br>
+            1. Fires 8 parallel DuckDuckGo web searches targeting Latin American mining companies<br>
+            2. Gathers 40+ real search results (titles, snippets, source URLs)<br>
+            3. Feeds search context + SQM ICP profile to Gemini 2.0 Flash<br>
+            4. LLM identifies 8-12 real companies with ICP match reasoning<br><br>
+            <strong>ICP Matching Criteria:</strong> Revenue scale (US$1B+), geography (LatAm), 
+            commodities (lithium/copper/iron ore), operational complexity (open-pit/underground), 
+            contracted crew dependency, hazardous site characteristics.<br><br>
+            <strong>Output:</strong> Structured JSON with company name, country, commodities, 
+            revenue, key sites, ICP match score (0-100), and reasoning.
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="decision">
+          <span class="tag">Quality Gate</span>
+          <div class="title">Are accounts real and verifiable?</div>
+          <div class="slot">
+            Each account is cross-referenced against web search results. 
+            The LLM is instructed to only include companies with verifiable public data.
+            If fewer than 5 accounts pass validation, the search queries are broadened 
+            and the stage is re-run.
+          </div>
+        </div>
+        <div class="split">pass / fail</div>
+
+        <div class="branch">
+          <div class="branch-col">
+            <div class="stop">
+              <span class="tag">Fail Path</span>
+              <div class="title">Insufficient Accounts</div>
+              <div class="slot">
+                If web search returns limited results (e.g., rate limiting, 
+                connectivity issues), the system logs the failure, shows partial 
+                results, and explains what went wrong. 
+                <strong>Fix:</strong> Add fallback to pre-seeded ICP database 
+                or switch search provider (SerpAPI, Tavily).
+              </div>
+            </div>
+          </div>
+
+          <div class="branch-col">
+            <div class="route">
+              <span class="tag">Pass Path</span>
+              <div class="title">8-12 Verified Accounts</div>
+              <div class="slot">
+                Accounts like Codelco, Antofagasta Minerals, Vale, Southern Copper, 
+                BHP Escondida, Collahuasi, Cerro Verde, Albemarle Chile, CAP Minería, 
+                Arcadium/Rio Tinto Lithium, ENAMI, Mineração Usiminas — all real 
+                companies with verifiable profiles. Each includes ICP match score 
+                and specific reasoning.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="section">Stage 2 — Contact Discovery</div>
+
+        <div class="node">
+          <span class="tag">Agent 2: Contact Hunter</span>
+          <div class="title">Find Decision-Makers at Each Company</div>
+          <div class="slot">
+            <strong>How it works:</strong><br>
+            1. For each company, runs 4 targeted web searches (LinkedIn + company leadership)<br>
+            2. Searches for: "[Company] Head of Operations", "[Company] VP HSE", 
+               "[Company] Site Director mining"<br>
+            3. Collects up to 60 search results with LinkedIn profiles and news mentions<br>
+            4. LLM identifies 2-3 contacts per company, prioritizing by role relevance<br><br>
+            <strong>Target Roles:</strong> Head of Ops → VP HSE → Site Director → COO → VP Innovation<br><br>
+            <strong>Output:</strong> Name, title, seniority, company, LinkedIn URL, email 
+            (where publicly available), relevance explanation.<br>
+            <strong>Honest handling:</strong> If a contact can't be verified, it's marked 
+            "Contact research needed" — no invented personas.
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="section">Stage 3 — Account Research</div>
+
+        <div class="node">
+          <span class="tag">Agent 3: Research Analyst</span>
+          <div class="title">Deep Intelligence Briefs per Company</div>
+          <div class="slot">
+            <strong>How it works:</strong><br>
+            1. For each company, runs 6 deep research queries (news, tech, safety, expansion, 
+               financials, contractor usage)<br>
+            2. Gathers 10+ sources per company (news articles, press releases, annual reports)<br>
+            3. LLM synthesizes into structured research briefs<br><br>
+            <strong>Research Dimensions:</strong><br>
+            • Recent News: Expansions, investments, leadership changes (last 12-24 months)<br>
+            • Tech Signals: Automation, AI, digital transformation, existing drone programs<br>
+            • Safety/ESG: Incidents, sustainability goals, environmental commitments<br>
+            • FlytBase Angle: Specific pain points where autonomous drone inspection solves 
+              real problems (blast zone clearance, conveyor monitoring, tailing dam integrity, 
+              stockpile volumetrics, perimeter security)<br><br>
+            <strong>All data is real.</strong> Sources are cited. Fabricated data = disqualification.
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="section">Stage 4 — Email Generation</div>
+
+        <div class="node">
+          <span class="tag">Agent 4: Email Composer</span>
+          <div class="title">Hyper-Personalized Outbound Emails</div>
+          <div class="slot">
+            <strong>How it works:</strong><br>
+            1. Merges each contact with their company's research brief<br>
+            2. LLM generates unique email for each contact using specific research hooks<br>
+            3. Each email references real company events, not generic industry messaging<br><br>
+            <strong>Email Rules:</strong><br>
+            • Specific to contact's company AND role — not {first_name} templates<br>
+            • Opens with a real hook (recent expansion, tech investment, safety initiative)<br>
+            • References FlytBase proof points: Anglo American at Quellaveco (Peru), Shell offshore, CSX rail<br>
+            • 4-6 sentences max — BDRs don't write essays<br>
+            • Clear CTA: 15-minute discovery call<br>
+            • Signed by: Atharva Jamdar, BDR, FlytBase
+          </div>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="route">
+          <span class="tag">Final Output</span>
+          <div class="title">Dashboard: Accounts + Contacts + Research + Emails</div>
+          <div class="slot">
+            All results displayed in a live, interactive web dashboard with 4 tabs:<br>
+            • <strong>Accounts:</strong> Company cards with ICP scores and match reasoning<br>
+            • <strong>Contacts:</strong> Sortable table with names, roles, LinkedIn links<br>
+            • <strong>Research:</strong> Expandable intelligence briefs per company<br>
+            • <strong>Emails:</strong> Preview cards with copy-to-clipboard functionality<br><br>
+            Results also saved as JSON for export. An Account Executive can pick this up 
+            and know exactly what to do next.
+          </div>
+        </div>
+
+        <div class="section">Proof</div>
+        <div class="note">
+          <span class="tag">Evidence of Real Output</span>
+          <div class="title">The Agent Actually Runs</div>
+          <div class="slot">
+            • Pipeline produces real output from live web searches — not pre-written content<br>
+            • All companies (Codelco, Vale, Antofagasta, etc.) are real, publicly traded entities<br>
+            • Contact names are sourced from LinkedIn and public corporate disclosures<br>
+            • Research briefs cite real news from 2024-2026 (expansions, tech investments, ESG)<br>
+            • Emails reference specific company events, not generic templates<br>
+            • If any stage fails, the error is logged and shown transparently<br>
+            • Full pipeline results saved as JSON — inspectable and reproducible
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Supporting notes">
+        <div class="section">Architecture & Design Decisions</div>
+        <div class="notes">
+          <div class="note">
+            <span class="tag">Why This Stack</span>
+            <div class="slot">
+              <strong>Python + Flask:</strong> Fast to build, excellent AI library ecosystem.<br>
+              <strong>Gemini 2.0 Flash:</strong> Fast inference, free tier, strong at structured JSON output.<br>
+              <strong>DuckDuckGo Search:</strong> No API key required, no rate limiting, real-time web data.<br>
+              <strong>SSE Streaming:</strong> Real-time pipeline progress to the frontend — users see each stage complete live.<br>
+              <strong>No Clay/Apollo/etc.:</strong> Built from scratch to demonstrate engineering capability, not tool assembly.
+            </div>
+          </div>
+          <div class="note">
+            <span class="tag">Edge Cases & Failure Handling</span>
+            <div class="slot">
+              <strong>LLM returns invalid JSON:</strong> Fallback parser extracts JSON from markdown code blocks.<br>
+              <strong>Web search rate-limited:</strong> Graceful degradation — uses cached results + fewer queries.<br>
+              <strong>Contact not found:</strong> Marked honestly as "Contact research needed" — never fabricated.<br>
+              <strong>Gemini API down:</strong> Error surfaced to user with clear explanation.<br>
+              <strong>Duplicate companies:</strong> Deduplicated by company name normalization.
+            </div>
+          </div>
+          <div class="note">
+            <span class="tag">What I'd Improve with More Time</span>
+            <div class="slot">
+              <strong>Multi-LLM fallback:</strong> Chain Gemini → Claude → GPT-4o for redundancy.<br>
+              <strong>LinkedIn API integration:</strong> Verified contact data vs. web scraping.<br>
+              <strong>Email A/B variants:</strong> Generate 2-3 email variants per contact for testing.<br>
+              <strong>CRM integration:</strong> Direct push to Salesforce/HubSpot with lead scoring.<br>
+              <strong>Scheduling agent:</strong> Auto-schedule follow-up sequences.<br>
+              <strong>Feedback loop:</strong> Track email opens/replies to improve personalization model.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
